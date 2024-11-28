@@ -1,4 +1,4 @@
-package POJO;
+package resources.pojo;
 
 public class User {
     private String name;

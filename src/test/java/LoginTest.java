@@ -1,49 +1,38 @@
-import POJO.User;
+import resources.pojo.User;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
-import utils.ActionBrowser;
-import utils.UserGeneration;
+import resources.utils.ActionBrowser;
+import resources.utils.UserGeneration;
 import yandex.praktikum.LoginPage;
 import yandex.praktikum.MainPage;
 import yandex.praktikum.PersonalAccountPage;
+import java.io.IOException;
 
-import static utils.UserGeneration.deleteUser;
+import static resources.utils.UserGeneration.deleteUser;
 
-@RunWith(Parameterized.class)
 public class LoginTest {
-
     private WebDriver driver;
-    private final String browser;
     private User testUser; // Сгенерированный пользователь
 
     MainPage mainPage;
     LoginPage loginPage;
     PersonalAccountPage personalAccountPage;
 
-    // Параметры браузеров
-    @Parameterized.Parameters
-    public static Object[] browsers() {
-        return new Object[]{"chrome", "firefox"};
-    }
-
-    // Конструктор с параметром браузера
-    public LoginTest(String browser) {
-        this.browser = browser;
-    }
-
     @Before
-    public void setUp() {
-        // Настройка браузера с учетом параметра
+    public void setUp() throws IOException {
+        // Загрузка конфигурации браузера из файла или переменной окружения
+        ActionBrowser.loadBrowserConfig();
+        String browser = ActionBrowser.browser; // Присваиваем значение browser из ActionBrowser
+
+        // Настройка браузера
         ActionBrowser.setUpBrowser(browser);
         driver = ActionBrowser.getDriver();
 
-        // Инициализация страниц после настройки драйвера
+        // Инициализация страниц
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         personalAccountPage = new PersonalAccountPage(driver);
@@ -52,11 +41,13 @@ public class LoginTest {
         testUser = UserGeneration.createUniqueUser();
     }
 
-    // Удаляем пользователя после прогона
     @After
     public void teardown() {
+        // Завершение работы с драйвером и удаление пользователя
         ActionBrowser.tearDown();
-        deleteUser(testUser.getToken());
+        if (testUser != null && testUser.getToken() != null) {
+            deleteUser(testUser.getToken());
+        }
     }
 
     @Test
@@ -127,12 +118,12 @@ public class LoginTest {
     }
 
     @Step("Проверка выхода по кнопке «Выйти» в личном кабинете.")
-    private void logoutFromPersonalAccount(){
+    private void logoutFromPersonalAccount() {
         mainPage.clickLoginButton();
         loginUser();
         testSuccesfullLogin();
         personalAccountPage.clickLogoutButton();
-        //Дожидаемся линка "Зарегистрироваться"
+        // Дожидаемся линка "Зарегистрироваться"
         loginPage.waitForLinkRegistration();
     }
 
@@ -145,7 +136,7 @@ public class LoginTest {
 
     // Метод для проверки успешного входа
     private void testSuccesfullLogin() {
-        mainPage.waitForElementPersonalAccountToBeVisible(driver);
+        mainPage.waitForPersonalAccountButton(driver);
         mainPage.clickPersonalAccount();
         personalAccountPage.waitForProfileAccount(driver);
     }

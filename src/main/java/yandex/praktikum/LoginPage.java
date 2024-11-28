@@ -1,101 +1,77 @@
 package yandex.praktikum;
 
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
+public class LoginPage extends BasePage {
 
-public class LoginPage {
-    private final WebDriver driver;
+    // Локаторы кнопок
+    private final By loginButton = By.xpath("//button[text()='Войти']");
+    private final By buttonRegistration = By.xpath("//button[text()='Зарегистрироваться']");
+    private final By buttonMainPage = By.className("AppHeader_header__logo__2D0X2");
 
-    //Локаторы кнопок
-    private By loginButton = By.xpath("//button[text()='Войти']");
-    private By buttonRegistration = By.xpath("//button[text()='Зарегистрироваться']");
-    private By buttonMainPage = By.className("AppHeader_header__logo__2D0X2");
+    // Локаторы гиперссылок
+    private final By linkRegistration = By.linkText("Зарегистрироваться");
+    private final By linkLogin = By.xpath("//a[text()='Войти' and @href='/login']");
+    private final By linkRecover = By.xpath("//a[text()='Восстановить пароль' and @href='/forgot-password']");
 
-    //Локаторы гиперссылок
-    private By linkRegistration = By.linkText("Зарегистрироваться");
-    private By linkLogin = By.xpath("//a[text()='Войти' and @href='/login']");
-    private By linkRecover = By.xpath("//a[text()='Восстановить пароль' and @href='/forgot-password']");
-
-    //Локаторы полей регистрации
-    private By nameField = By.xpath("//label[text()='Имя']/following-sibling::input");
-    private By emailField = By.xpath("//label[text()='Email']/following-sibling::input");
-    private By passwordField = By.xpath("//label[text()='Пароль']/following-sibling::input");
-    private By errorPasswordMessageLocator = By.xpath("//p[contains(@class, 'input__error') and text()='Некорректный пароль']");
+    // Локаторы полей регистрации
+    private final By nameField = By.xpath("//label[text()='Имя']/following-sibling::input");
+    private final By emailField = By.xpath("//label[text()='Email']/following-sibling::input");
+    private final By passwordField = By.xpath("//label[text()='Пароль']/following-sibling::input");
+    private final By errorPasswordMessageLocator = By.xpath("//p[contains(@class, 'input__error') and text()='Некорректный пароль']");
 
     public LoginPage(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
     }
 
-    public void waitForElementToBeVisible(WebDriver driver, By locator) {
-        long timeout = 10L; // Время ожидания в секундах
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeout)); // Передаём Duration
-        wait.until(ExpectedConditions.visibilityOfElementLocated(locator)); // Условие ожидания
-    }
-
-    //метод для ожидания появление ошибки по локатору
-    public void waitErrorMessage(WebDriver driver, By errorMessageLocator) {
-        long timeout = 10L;
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeout)); // Передаём Duration в конструктор
-        WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageLocator));
-        Assert.assertNotNull("Ошибка не отображается", errorMessage);
-    }
-    //Метод ожидания появление кнопки Войти
+    // Методы ожидания
     public void waitForLoginButton() {
-        long timeout = 10L;
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeout)); // Передаём Duration в конструктор
-        WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(loginButton));
-        Assert.assertNotNull("Кнопка 'Войти' не появилась на странице", loginButton);
+        waitForElementToBeVisible(loginButton, 10);
     }
-
 
     public void waitErrorMessageAboutPassword() {
-        waitErrorMessage(driver, errorPasswordMessageLocator);
+        waitForElementToBeVisible(errorPasswordMessageLocator, 10);
     }
 
     public void waitForLinkRegistration() {
-        waitForElementToBeVisible(driver, linkRegistration);
+        waitForElementToBeVisible(linkRegistration, 10);
     }
 
+    // Методы действий
     public void clickRegistration() {
-        driver.findElement(linkRegistration).click();
+        clickElement(linkRegistration);
     }
 
-    public void fillNameField(String Name) {
-        driver.findElement(nameField).sendKeys(Name);
+    public void fillNameField(String name) {
+        sendKeysToElement(nameField, name);
     }
 
-    public void fillEmailField(String Email) {
-        driver.findElement(emailField).sendKeys(Email);
+    public void fillEmailField(String email) {
+        sendKeysToElement(emailField, email);
     }
 
-    public void fillPasswordField(String Password) {
-        driver.findElement(passwordField).sendKeys(Password);
+    public void fillPasswordField(String password) {
+        sendKeysToElement(passwordField, password);
     }
 
     public void clickButtonRegistration() {
-        driver.findElement(buttonRegistration).click();
+        clickElement(buttonRegistration);
     }
 
-    public void clickLoginButton(){
-        driver.findElement(loginButton).click();
+    public void clickLoginButton() {
+        clickElement(loginButton);
     }
 
-    public void clickLinkLogin(){
-        driver.findElement(linkLogin).click();
+    public void clickLinkLogin() {
+        clickElement(linkLogin);
     }
 
-    public void clickLinkRecover(){
-        driver.findElement(linkRecover).click();
+    public void clickLinkRecover() {
+        clickElement(linkRecover);
     }
 
-    public void clickButtonManePage(){
-        driver.findElement(buttonMainPage).click();
+    public void clickButtonMainPage() {
+        clickElement(buttonMainPage);
     }
-
 }

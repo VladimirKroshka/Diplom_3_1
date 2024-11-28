@@ -1,15 +1,15 @@
-package utils;
+package resources.utils;
 
-import POJO.User;
+import resources.pojo.User;
 import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static utils.RandomGenerator.generateRandomNumber;
+import static resources.utils.RandomGenerator.generateRandomNumber;
 
 public class UserGeneration {
 
-    public static final String BASE_URL = "https://stellarburgers.nomoreparties.site/api";
+    public static final String BASE_API = "https://stellarburgers.nomoreparties.site/api";
     public static final String API_REGISTER_USER = "/auth/register";
     public static final String API_DELETED_USER = "/auth/user";
     public static final String API_LOGIN_USER = "/auth/login";
@@ -39,7 +39,7 @@ public class UserGeneration {
                 .contentType("application/json")
                 .body(newUser)
                 .log().all()
-                .post(BASE_URL + API_REGISTER_USER);
+                .post(BASE_API + API_REGISTER_USER);
 
         // Проверка ответа и извлечение токена
         response.then()
@@ -57,7 +57,7 @@ public class UserGeneration {
                 .contentType("application/json")
                 .log().all()
                 .body(user)
-                .post(BASE_URL + API_LOGIN_USER);
+                .post(BASE_API + API_LOGIN_USER);
 
         response.then()
                 .log().all()
@@ -77,7 +77,7 @@ public class UserGeneration {
                 .auth().oauth2(accessToken)
                 .log().all()
                 .when()
-                .delete(BASE_URL + API_DELETED_USER)
+                .delete(BASE_API + API_DELETED_USER)
                 .then()
                 .log().all()
                 .statusCode(202);

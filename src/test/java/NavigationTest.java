@@ -1,43 +1,35 @@
-import POJO.User;
+import resources.pojo.User;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
-import utils.ActionBrowser;
-import utils.UserGeneration;
+import resources.utils.ActionBrowser;
+import resources.utils.UserGeneration;
 import yandex.praktikum.LoginPage;
 import yandex.praktikum.MainPage;
 import yandex.praktikum.PersonalAccountPage;
+import java.io.IOException;
 
-import static utils.UserGeneration.deleteUser;
+import static resources.utils.UserGeneration.deleteUser;
 
-@RunWith(Parameterized.class)
 public class NavigationTest {
     private WebDriver driver; // WebDriver
-    private final String browser;
     private User testUser; // Сгенерированный пользователь
 
     private MainPage mainPage;
     private LoginPage loginPage;
     private PersonalAccountPage personalAccountPage;
-
-    // Параметры браузеров
-    @Parameterized.Parameters
-    public static Object[] browsers() {
-        return new Object[]{"chrome", "firefox"};
-    }
-
-    // Конструктор с параметром браузера
-    public NavigationTest(String browser) {
-        this.browser = browser;
-    }
+    private String browser;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
+        // Загрузка конфигурации браузера из файла или переменной окружения
+        ActionBrowser.loadBrowserConfig();
+        String browser = ActionBrowser.browser; // Присваиваем значение browser из ActionBrowser
+
+        // Настройка браузера
         ActionBrowser.setUpBrowser(browser);
         driver = ActionBrowser.getDriver();
 
@@ -85,12 +77,25 @@ public class NavigationTest {
         navigateToMainPage("logo");
     }
 
+    // Разделение теста testConstructorTabs на отдельные тесты для каждого таба
     @Test
-    @DisplayName("Проверка переходов в разделе конструктора")
-    @io.qameta.allure.Description("Тест переходов в разделы «Булки», «Соусы», «Начинки»")
-    public void testConstructorTabs() {
+    @DisplayName("Переход в раздел «Булки»")
+    @io.qameta.allure.Description("Тест перехода в раздел «Булки»")
+    public void testTabBuns() {
         verifyTabNavigation("Булки");
+    }
+
+    @Test
+    @DisplayName("Переход в раздел «Соусы»")
+    @io.qameta.allure.Description("Тест перехода в раздел «Соусы»")
+    public void testTabSauces() {
         verifyTabNavigation("Соусы");
+    }
+
+    @Test
+    @DisplayName("Переход в раздел «Начинки»")
+    @io.qameta.allure.Description("Тест перехода в раздел «Начинки»")
+    public void testTabFillings() {
         verifyTabNavigation("Начинки");
     }
 
@@ -114,7 +119,7 @@ public class NavigationTest {
         } else if (type.equals("logo")) {
             mainPage.clickLogo();
         }
-        mainPage.waitBannerBuildBurger(driver);
+        mainPage.waitForBannerBuildBurger(driver);
     }
 
     @Step("Проверка перехода в раздел {tabName}")
@@ -126,11 +131,11 @@ public class NavigationTest {
                 break;
             case "Соусы":
                 mainPage.clickTabSauces();
-                mainPage.verifyActivetabSauces();
+                mainPage.verifyActiveTabSauces();
                 break;
             case "Начинки":
                 mainPage.clickTabFillings();
-                mainPage.verifyActivetabFillings();
+                mainPage.verifyActiveTabFillings();
                 break;
         }
     }

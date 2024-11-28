@@ -1,33 +1,26 @@
 package yandex.praktikum;
 
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
-
-public class PersonalAccountPage {
-    private final WebDriver driver;
-
-    public PersonalAccountPage(WebDriver driver) {
-        this.driver = driver;
-    }
+public class PersonalAccountPage extends BasePage {
 
     // Локатор для кнопки "Профиль"
-    private By profileText = By.cssSelector("a[href='/account/profile']");
-    // Локатор для кнопки выход
-    private By logoutButton = By.xpath("//button[contains(text(), 'Выход')]");
+    private final By profileText = By.cssSelector("a[href='/account/profile']");
+    // Локатор для кнопки "Выход"
+    private final By logoutButton = By.xpath("//button[contains(text(), 'Выход')]");
 
-    public void waitForProfileAccount(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(profileText));
-        Assert.assertNotNull("Элемент 'Профиль' не найден на странице", element);
+    public PersonalAccountPage(WebDriver driver) {
+        super(driver); // Передаем WebDriver в родительский класс
     }
 
-    public void clickLogoutButton(){
-        driver.findElement(logoutButton).click();
+    // Ожидание отображения кнопки "Профиль"
+    public void waitForProfileAccount(WebDriver driver) {
+        waitForElementToBeVisible(profileText, 10);
+    }
+
+    // Клик по кнопке "Выход"
+    public void clickLogoutButton() {
+        clickElement(logoutButton);
     }
 }
